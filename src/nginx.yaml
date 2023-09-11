@@ -1,0 +1,43 @@
+apiVersion: apps/v1 # versão do Deployment
+kind: Deployment # tipo de arquivo yaml
+metadata: 
+  name: nginx-deployment # nome do arquivo POD
+  labels: # rótulo de identificação
+    app: nginx
+    env: production
+  namespace: default # namespace default (pode ser colocado outro, mas é necessário criar antes de executar este arquivo yaml)
+
+spec:
+  selector:
+    matchLabels: # verifica o rótulo de identificação do metadata
+      app: nginx
+  template:
+    metadata:
+      name: pod-nginx # nome do metadata
+      labels: # verifica o rótulo de identificação com o selector do spec
+        app: nginx
+        env: production
+    spec: # especificação dos dados do container
+      containers:
+        - name: nginx-container # nome do container
+          image: nginx # nome da imagem a ser usada
+          ports:
+            - containerPort: 80 # porta que vai rodar no POD
+              name: nginx-target # tag usada para permitir a comunicação com o "targetPort" do Service
+  replicas: 1 # número de replicas
+
+---
+
+apiVersion: v1 # versão do Service
+kind: Service # tipo de arquivo yaml
+metadata:
+  name: nginx-service # nome do arquivo Service
+spec:
+  type: ClusterIP # tipo de service - (comunicação interna)
+  selector: # comunicação com o Deployment
+    app: nginx
+  ports:
+    - name: nginx-port # nome do ports
+      protocol: TCP # tipo de protocolo de comunicação
+      port: 80 # porta que o Service está disponibilizado
+      targetPort: nginx-target # porta que o serviço tem como alvo em qualquer POD (aqui ele faz uma ligação com o "ports" do Deployment)
