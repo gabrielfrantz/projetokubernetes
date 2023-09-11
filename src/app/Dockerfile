@@ -5,7 +5,8 @@ FROM python:latest
 WORKDIR /app
 
 # realia a instalação dos seguintes pacotes
-RUN pip install pyscopg2 psycopg2-binary flask
+RUN pip install pyscopg2 psycopg2-binary flask 
+RUN pip3 install requests
 
 # copia tudo que está na pasta app do computador para dentro da pasta app criada no container
 COPY . /app
