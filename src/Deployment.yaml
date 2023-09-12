@@ -1,21 +1,21 @@
 apiVersion: apps/v1 # versão do Deployment
 kind: Deployment # tipo de arquivo yaml
 metadata: 
-  name: nginx-deployment # nome do arquivo POD
+  name: app-deployment # nome do arquivo POD
   labels: # rótulo de identificação
-    app: nginx
+    app: app
     env: production
   namespace: default # namespace default (pode ser colocado outro, mas é necessário criar antes de executar este arquivo yaml)
 
 spec:
   selector:
     matchLabels: # verifica o rótulo de identificação do metadata
-      app: nginx
+      app: app
   template:
     metadata:
-      name: pod-nginx # nome do metadata
+      name: pod-app # nome do metadata
       labels: # verifica o rótulo de identificação com o selector do spec
-        app: nginx
+        app: app
         env: production
     spec: # especificação dos dados do container
       containers:
@@ -23,7 +23,7 @@ spec:
           image: nginx # nome da imagem a ser usada
           ports:
             - containerPort: 80 # porta que vai rodar no POD
-              name: nginx-target # tag usada para permitir a comunicação com o "targetPort" do Service
+              name: app-target # tag usada para permitir a comunicação com o "targetPort" do Service
   replicas: 1 # número de replicas
 
 ---
@@ -31,13 +31,13 @@ spec:
 apiVersion: v1 # versão do Service
 kind: Service # tipo de arquivo yaml
 metadata:
-  name: nginx-service # nome do arquivo Service
+  name: app-service # nome do arquivo Service
 spec:
   type: ClusterIP # tipo de service - (comunicação interna)
   selector: # comunicação com o Deployment
-    app: nginx
+    app: app
   ports:
-    - name: nginx-port # nome do ports
+    - name: app-port # nome do ports
       protocol: TCP # tipo de protocolo de comunicação
       port: 80 # porta que o Service está disponibilizado
-      targetPort: nginx-target # porta que o serviço tem como alvo em qualquer POD (aqui ele faz uma ligação com o "ports" do Deployment)
+      targetPort: app-target # porta que o serviço tem como alvo em qualquer POD (aqui ele faz uma ligação com o "ports" do Deployment)
